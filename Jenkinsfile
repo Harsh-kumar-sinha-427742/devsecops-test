@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                echo 'Cloning the GitHub Repository...'
+                echo 'Cloning the GitHub Repository........'
                 sh '''
                     rm -rf temp_repo
                     git clone --depth=1 https://github.com/Akashsonawane571/devsecops-test.git temp_repo
