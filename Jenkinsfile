@@ -81,19 +81,19 @@ pipeline {
             }
         }
 
-    /*    stage('Deploy to Server') {
+        stage('Deploy to Server') {
             steps {
                 timeout(time: 3, unit: 'MINUTES') {
                     sshagent(credentials: ['app-server']) {
                         sh '''
                             scp -o StrictHostKeyChecking=no temp_repo/webgoat-server/target/webgoat-server-v8.2.0-SNAPSHOT.jar ubuntu@3.109.152.116:/WebGoat
-                            ssh -o StrictHostKeyChecking=no ubuntu@3.109.152.116 "nohup java -jar /WebGoat/webgoat-server-v8.2.0-SNAPSHOT.jar > /dev/null 2>&1 &"
+                            ssh -o StrictHostKeyChecking=no ubuntu@16.171.172.37 "nohup java -jar /WebGoat/webgoat-server-v8.2.0-SNAPSHOT.jar > /dev/null 2>&1 &"
                         '''
                     }
                 }
             }
         } 
-        */
+        
 
         stage('Run ZAP DAST Scan (Baseline)') {
             steps {
