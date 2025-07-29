@@ -84,6 +84,23 @@ pipeline {
             }
         }
 
+        stage('Deploy to AWS EC2') {
+            steps {
+                echo 'Deploying Docker container to EC2...'
+                sshagent(credentials: ['ec2-ssh-key']) { // Replace with your Jenkins SSH credential ID
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@13.51.168.90 << EOF
+                            docker stop juice-shop || true
+                            docker rm juice-shop || true
+                            docker pull kumar0ndocker/juice-shop
+                            docker run -d --name juice-shop -p 3000:3000 kumar0ndocker/juice-shop
+                        EOF
+                    '''
+                }
+            }
+       }
+
+        
     /*    stage('Deploy to Server') {
             steps {
                 timeout(time: 3, unit: 'MINUTES') {
