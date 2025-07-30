@@ -28,6 +28,7 @@ pipeline {
                   # Clone only latest commit
                   cd temp_repo
                   # Run trufflehog locally on shallow clone
+                  export PATH=$PATH:/home/rock1/.local/bin
                   trufflehog --regex --entropy=True --max_depth=10 . > ../trufflehog_report.json || true
                   cd ..
                 '''
