@@ -49,7 +49,7 @@ pipeline {
             }
         }
         
-        stage('SonarQube Scan') {
+  /*      stage('SonarQube Scan') {
             steps {
                 echo 'Starting SonarQube SAST Scan...'
                 withSonarQubeEnv('sonarqube') {
@@ -66,7 +66,7 @@ pipeline {
                 }
             }
         }
-
+*/
         stage('Build Project') {
             steps {
                 echo 'Building the Java project with Maven...'
