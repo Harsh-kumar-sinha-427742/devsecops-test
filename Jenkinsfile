@@ -32,7 +32,7 @@ pipeline {
                   trufflehog --regex --entropy=True --max_depth=10 . > ../trufflehog_report.json || true
                   cd ..
                 '''
-                archiveArtifacts artifacts: 'trufflehog_report.json',fingerprint 'trufflehog-report.json', onlyIfSuccessful: false
+                archiveArtifacts artifacts: 'trufflehog_report.json',onlyIfSuccessful: false
           }
         }
 
