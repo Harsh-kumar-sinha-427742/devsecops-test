@@ -25,18 +25,15 @@ pipeline {
             steps {
                 echo 'Running TruffleHog on latest commit only...'
                 sh '''
-                  # Clone only latest commit
                   cd temp_repo
-                  # Run trufflehog locally on shallow clone
-                  
                   trufflehog --regex --entropy=True --max_depth=10 . > ../trufflehog_report.json || true
                   cd ..
                 '''
-                archiveArtifacts artifacts: 'trufflehog_report.json',onlyIfSuccessful: false
-          }
+                archiveArtifacts artifacts: 'trufflehog_report.json', onlyIfSuccessful: false
+            }
         }
 
-       stage('Dependency Check (OWASP)') {
+        stage('Dependency Check (OWASP)') {
             steps {
                 echo 'Running OWASP Dependency-Check...'
                 sh '''
@@ -48,8 +45,9 @@ pipeline {
                 archiveArtifacts artifacts: 'dependency-check-report/*', onlyIfSuccessful: false
             }
         }
-        
-  /*      stage('SonarQube Scan') {
+
+        /* 
+        stage('SonarQube Scan') {
             steps {
                 echo 'Starting SonarQube SAST Scan...'
                 withSonarQubeEnv('sonarqube') {
@@ -66,7 +64,8 @@ pipeline {
                 }
             }
         }
-*/
+        */
+
         stage('Build Project') {
             steps {
                 echo 'Building the Java project with Maven...'
@@ -84,10 +83,11 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy to AWS EC2') {
             steps {
                 echo 'Deploying Docker container to EC2...'
-                sshagent(credentials: ['ec2-ssh-key']) { // Replace with your Jenkins SSH credential ID
+                sshagent(credentials: ['ec2-ssh-key']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@13.51.168.90 << EOF
                             docker stop juice-shop || true
@@ -100,7 +100,8 @@ pipeline {
             }
         }
 
-    /*    stage('Deploy to Server') {
+        /*
+        stage('Deploy to Server') {
             steps {
                 timeout(time: 3, unit: 'MINUTES') {
                     sshagent(credentials: ['app-server']) {
@@ -111,7 +112,7 @@ pipeline {
                     }
                 }
             }
-        } 
+        }
         */
 
         stage('Run ZAP DAST Scan (Baseline)') {
@@ -131,11 +132,13 @@ pipeline {
 
     post {
         always {
-            echo 'Cleaning up temporary files...'
-            sh '''
-                rm -rf temp_repo dependency-check-report trufflehog_report.txt \
-                       $ZAP_REPORT_HTML $ZAP_REPORT_XML $ZAP_REPORT_JSON || true
-            '''
+            node {
+                echo 'Cleaning up temporary files...'
+                sh '''
+                    rm -rf temp_repo dependency-check-report trufflehog_report.txt \
+                           $ZAP_REPORT_HTML $ZAP_REPORT_XML $ZAP_REPORT_JSON || true
+                '''
+            }
         }
     }
 }
