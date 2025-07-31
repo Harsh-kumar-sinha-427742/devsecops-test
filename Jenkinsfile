@@ -53,6 +53,7 @@ pipeline {
                     sh '''
                         mkdir -p dependency-check-report
                         echo "NVD API Key is: ${NVD_KEY:0:4}********"
+                        curl -I https://services.nvd.nist.gov/rest/json/cves/2.0
                         docker run --rm \
                           -v $WORKSPACE/temp_repo:/src \
                           -v $WORKSPACE/dependency-check-report:/report \
