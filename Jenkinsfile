@@ -71,7 +71,9 @@ pipeline {
             }
         }
         */ 
+        
         // This will work using docker image of dependency check without using nvd aoi key
+        /*
         stage('Dependency Check (OWASP via Docker)') {
             steps {
                 echo 'Running OWASP Dependency-Check using Docker...'
@@ -83,8 +85,7 @@ pipeline {
                       owasp/dependency-check \
                       --project "Universal-SCA-Scan" \
                       --scan /src \
-                      --exclude **/*.zip \
-                      --exclude "../../*" \
+                      
                       --enableExperimental \
                       --format ALL \
                       --out /report || true
@@ -165,7 +166,7 @@ pipeline {
             }
         }
         */
-
+/*
         stage('Run ZAP DAST Scan (Baseline)') {
             steps {
                 echo 'Running ZAP Baseline DAST Scan...'
@@ -180,7 +181,7 @@ pipeline {
             }
         }
     }
-
+*/
     post {
         always {
             script {
