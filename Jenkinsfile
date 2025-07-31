@@ -179,9 +179,10 @@ pipeline {
                 '''
                 archiveArtifacts artifacts: "${ZAP_REPORT_HTML}, ${ZAP_REPORT_XML}, ${ZAP_REPORT_JSON}", onlyIfSuccessful: false
             }
-        }
+        } 
+        */
     }
-*/
+
     post {
         always {
             script {
