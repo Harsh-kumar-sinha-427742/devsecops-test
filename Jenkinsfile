@@ -83,7 +83,6 @@ pipeline {
                       owasp/dependency-check \
                       --project "Universal-SCA-Scan" \
                       --scan /src \
-                      --noupdate \
                       --exclude **/*.zip \
                       --exclude "../../*" \
                       --enableExperimental \
