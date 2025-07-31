@@ -177,6 +177,14 @@ pipeline {
             }
         } 
         */
+        stage('Build Project') {
+            steps {
+                echo 'Building the Java project with Maven...'
+                dir('temp_repo') {
+                    sh 'mvn clean install -DskipTests'
+                }
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 dir('temp_repo') {
