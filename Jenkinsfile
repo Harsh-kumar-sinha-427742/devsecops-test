@@ -32,7 +32,7 @@ pipeline {
                 archiveArtifacts artifacts: 'trufflehog_report.json', onlyIfSuccessful: false
             }
         }
-
+/*
         stage('Dependency Check (OWASP)') {
             steps {
                 echo 'Running OWASP Dependency-Check...'
@@ -45,6 +45,27 @@ pipeline {
                 archiveArtifacts artifacts: 'dependency-check-report/*', onlyIfSuccessful: false
             }
         }
+        */
+        stage('Dependency Check (OWASP via Docker)') {
+            steps {
+                echo 'Running OWASP Dependency-Check using Docker...'
+                sh '''
+                    mkdir -p dependency-check-report
+                    docker run --rm \
+                      -v $WORKSPACE/temp_repo:/src \
+                      -v $WORKSPACE/dependency-check-report:/report \
+                      owasp/dependency-check \
+                      --project "Universal-SCA-Scan" \
+                      --scan /src \
+                      --format ALL \
+                      --out /report || true
+                '''
+                archiveArtifacts artifacts: 'dependency-check-report/*', onlyIfSuccessful: false
+            }
+        }
+        
+
+        
 
         /* 
         stage('SonarQube Scan') {
