@@ -4,6 +4,7 @@ pipeline {
     environment {
         DEPENDENCY_CHECK = '/home/rocky1/tools/dependency-check/bin/dependency-check.sh'
         //SONAR_SCANNER = tool name: 'sonar-scanner'
+        SONAR_URL =  'http://16.16.25.45:9000'
         ZAP_REPORT_HTML = 'zap_report.html'
         ZAP_REPORT_XML  = 'zap_report.xml'
         ZAP_REPORT_JSON = 'zap_report.json'
@@ -21,6 +22,7 @@ pipeline {
             }
         }
         // Trufflehog is installed locally
+        /*
         stage('Secret Scan (TruffleHog)') {
             steps {
                 echo 'Running TruffleHog on latest commit only...'
@@ -32,6 +34,7 @@ pipeline {
                 archiveArtifacts artifacts: 'trufflehog_report.json', onlyIfSuccessful: false
             }
         }
+        */
 /*      THis will work only when you have installed dependecy check locally
         stage('Dependency Check (OWASP)') {
             steps {
@@ -94,11 +97,11 @@ pipeline {
             }
         }
 
-        
+       */ 
 
         
 
-        /* 
+        
         stage('SonarQube Scan') {
             steps {
                 echo 'Starting SonarQube SAST Scan...'
@@ -109,14 +112,14 @@ pipeline {
                             $SONAR_SCANNER/bin/sonar-scanner \
                               -Dsonar.projectKey=devsecops-test \
                               -Dsonar.sources=. \
-                              -Dsonar.host.url=http://localhost:9000 \
+                              -Dsonar.host.url=$SONAR_URL \
                               -Dsonar.token=$SONAR_TOKEN
                         '''
                     }
                 }
             }
         }
-        */
+        
 /*
         stage('Build Project') {
             steps {
