@@ -20,7 +20,7 @@ pipeline {
                 '''
             }
         }
-
+        // Trufflehog is installed locally
         stage('Secret Scan (TruffleHog)') {
             steps {
                 echo 'Running TruffleHog on latest commit only...'
@@ -32,7 +32,7 @@ pipeline {
                 archiveArtifacts artifacts: 'trufflehog_report.json', onlyIfSuccessful: false
             }
         }
-/*
+/*      THis will work only when you have installed dependecy check locally
         stage('Dependency Check (OWASP)') {
             steps {
                 echo 'Running OWASP Dependency-Check...'
@@ -46,6 +46,8 @@ pipeline {
             }
         }
         */
+        
+        /* This will work only when NVD database start accepting api keys
         stage('Dependency Check (OWASP)') {
             steps {
                 echo 'Running OWASP Dependency-Check using Docker...'
@@ -68,6 +70,26 @@ pipeline {
                 archiveArtifacts artifacts: 'dependency-check-report/*', onlyIfSuccessful: false
             }
         }
+        */ 
+        // This will work using docker image of dependency check without using nvd aoi key
+        stage('Dependency Check (OWASP via Docker)') {
+            steps {
+                echo 'Running OWASP Dependency-Check using Docker...'
+                sh '''
+                    mkdir -p dependency-check-report
+                    docker run --rm \
+                      -v $WORKSPACE/temp_repo:/src \
+                      -v $WORKSPACE/dependency-check-report:/report \
+                      owasp/dependency-check \
+                      --project "Universal-SCA-Scan" \
+                      --scan /src \
+                      --format ALL \
+                      --out /report || true
+                '''
+                archiveArtifacts artifacts: 'dependency-check-report/*', onlyIfSuccessful: false
+            }
+        }
+
         
 
         
