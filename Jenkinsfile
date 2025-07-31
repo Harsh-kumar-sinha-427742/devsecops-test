@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DEPENDENCY_CHECK = '/home/rocky1/tools/dependency-check/bin/dependency-check.sh'
-        //SONAR_SCANNER = tool name: 'sonar-scanner'
+        SONAR_SCANNER = tool name: 'sonar-scanner'
         SONAR_URL =  'http://16.16.25.45:9000'
         ZAP_REPORT_HTML = 'zap_report.html'
         ZAP_REPORT_XML  = 'zap_report.xml'
