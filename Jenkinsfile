@@ -9,6 +9,12 @@ pipeline {
         ZAP_REPORT_XML  = 'zap_report.xml'
         ZAP_REPORT_JSON = 'zap_report.json'
         TARGET_URL      = 'http://localhost:3000' // Replace with actual target
+        IMAGE_NAME = 'kumar0ndocker/juice-shop'
+        TAG = 'v2'
+        IP = '51.21.199.171'
+        EC2_HOST          = "ubuntu@${IP}"
+        EC2_APP_PORT      = '3000'
+        EC2_KEY_ID        = 'ec2-ssh-key'
     }
 
     stages {
@@ -139,21 +145,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to AWS EC2') {
-            steps {
-                echo 'Deploying Docker container to EC2...'
-                sshagent(credentials: ['ec2-ssh-key']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@13.51.168.90 << EOF
-                            docker stop juice-shop || true
-                            docker rm juice-shop || true
-                            docker pull kumar0ndocker/juice-shop
-                            docker run -d --name juice-shop -p 3000:3000 kumar0ndocker/juice-shop
-                        EOF
-                    '''
-                }
-            }
-        }
+       
 */
         /*
         stage('Deploy to Server') {
@@ -184,6 +176,42 @@ pipeline {
             }
         } 
         */
+        stage('Build Docker Image') {
+            steps {
+                dir('temp_repo') {
+                    script {
+                        sh "docker build -t $IMAGE_NAME:$TAG ."
+                    }
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                            docker push $IMAGE_NAME:$TAG
+                            docker logout
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Deploy App to AWS EC2') {
+            steps {
+                echo '🚀 Deploying Juice Shop to EC2...'
+                sshagent(credentials: [env.EC2_KEY_ID]) {
+                    sh """#!/bin/bash
+                        ssh -o StrictHostKeyChecking=no $EC2_HOST "docker rm -f juice-shop || true"
+                        ssh $EC2_HOST "docker pull $IMAGE_NAME:$TAG"
+                        ssh $EC2_HOST "docker run -d  -p $EC2_APP_PORT:$EC2_APP_PORT $IMAGE_NAME:$TAG"
+                        sleep 20
+                    """
+                }
+            }
+        }
     }
 
     post {
