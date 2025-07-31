@@ -65,7 +65,7 @@ pipeline {
             }
         }
         */
-
+/*
         stage('Build Project') {
             steps {
                 echo 'Building the Java project with Maven...'
@@ -99,7 +99,7 @@ pipeline {
                 }
             }
         }
-
+*/
         /*
         stage('Deploy to Server') {
             steps {
