@@ -52,10 +52,11 @@ pipeline {
                 withCredentials([string(credentialsId: 'NVD_API_KEY', variable: 'NVD_KEY')]) {
                     sh '''
                         mkdir -p dependency-check-report
+                        echo "NVD API Key is: ${NVD_KEY:0:4}********"
                         docker run --rm \
                           -v $WORKSPACE/temp_repo:/src \
                           -v $WORKSPACE/dependency-check-report:/report \
-                          owasp/dependency-check:8.4.0 \
+                          owasp/dependency-check \
                           --nvdApiKey $NVD_KEY \
                           --project Universal-SCA-Scan \
                           --scan /src \
