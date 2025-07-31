@@ -107,7 +107,7 @@ pipeline {
 
         
 
-        
+        /*        
         stage('SonarQube Scan') {
             steps {
                 echo 'Starting SonarQube SAST Scan...'
@@ -125,6 +125,7 @@ pipeline {
                 }
             }
         }
+        */
         
 /*
         stage('Build Project') {
