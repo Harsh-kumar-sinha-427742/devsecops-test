@@ -82,6 +82,8 @@ pipeline {
                       -v $WORKSPACE/dependency-check-report:/report \
                       owasp/dependency-check \
                       --project "Universal-SCA-Scan" \
+                      rm -rf ~/.dependency-check/data
+
                       --scan /src \
                       --exclude **/*.zip \
                       --exclude "../../*" \
