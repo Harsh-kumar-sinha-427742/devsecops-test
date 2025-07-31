@@ -55,7 +55,7 @@ pipeline {
                         docker run --rm \
                           -v $WORKSPACE/temp_repo:/src \
                           -v $WORKSPACE/dependency-check-report:/report \
-                          owasp/dependency-check \
+                          owasp/dependency-check:8.4.0 \
                           --nvdApiKey $NVD_KEY \
                           --project Universal-SCA-Scan \
                           --scan /src \
