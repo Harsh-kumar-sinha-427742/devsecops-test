@@ -84,6 +84,8 @@ pipeline {
                       --project "Universal-SCA-Scan" \
                       --scan /src \
                       --exclude **/*.zip \
+                      --exclude "../../*" \
+                      --enableExperimental \
                       --format ALL \
                       --out /report || true
                 '''
