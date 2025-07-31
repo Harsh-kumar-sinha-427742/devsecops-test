@@ -46,20 +46,23 @@ pipeline {
             }
         }
         */
-        stage('Dependency Check (OWASP via Docker)') {
+        stage('Dependency Check (OWASP)') {
             steps {
                 echo 'Running OWASP Dependency-Check using Docker...'
-                sh '''
-                    mkdir -p dependency-check-report
-                    docker run --rm \
-                      -v $WORKSPACE/temp_repo:/src \
-                      -v $WORKSPACE/dependency-check-report:/report \
-                      owasp/dependency-check \
-                      --project "Universal-SCA-Scan" \
-                      --scan /src \
-                      --format ALL \
-                      --out /report || true
-                '''
+                withCredentials([string(credentialsId: 'NVD_API_KEY', variable: 'NVD_KEY')]) {
+                    sh '''
+                        mkdir -p dependency-check-report
+                        docker run --rm \
+                          -v $WORKSPACE/temp_repo:/src \
+                          -v $WORKSPACE/dependency-check-report:/report \
+                          owasp/dependency-check \
+                          --nvdApiKey $NVD_KEY \
+                          --project Universal-SCA-Scan \
+                          --scan /src \
+                          --format ALL \
+                          --out /report || true
+                    '''
+                }
                 archiveArtifacts artifacts: 'dependency-check-report/*', onlyIfSuccessful: false
             }
         }
