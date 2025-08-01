@@ -4,58 +4,27 @@ pipeline {
     environment {
         //DEPENDENCY_CHECK = '/opt/dependency-check/dependency-check/bin/dependency-check.sh'
         SONAR_SCANNER = tool name: 'sonar-scanner'
-        SONAR_URL =  'http://16.16.25.45:9000'   //ip of sonarqube
+        SONAR_URL =  'http://16.170.159.249:9000'   //ip of sonarqube
         ZAP_REPORT_HTML = 'zap_report.html'
         ZAP_REPORT_XML  = 'zap_report.xml'
         ZAP_REPORT_JSON = 'zap_report.json'
         TARGET_URL      = "http://${IP_HOSTED}:3000" // Replace with actual target(deployed juice-shop
         IMAGE_NAME = 'kumar0ndocker/juice-shop'
-        TAG = 'v2'
+        TAG = 'v3'
         IP_HOSTED = '13.60.182.131' //juice shop hosted ip
         WEB_HOST = "ubuntu@${IP_HOSTED}"
         IP = '16.170.162.214'                          //jenkins-server ip
-        EC2_HOST          = "ubuntu@${IP}"
+        EC2_HOST          = "ubuntu@${IP}"             // for jenkins ssh
         WEB_APP_PORT      = '3000'
         EC2_KEY_ID        = 'ec2-ssh-key'
-        ZAP_INSTANCE_HOST = "ubuntu@13.60.251.28"       //DAST -SCAN
+        ZAP_INSTANCE_HOST = "ubuntu@13.49.74.223"       //DAST -SCAN
     }
 
     stages {
         
-        // running
-        stage('Deploy App to AWS EC2') {
-            steps {
-                echo '🚀 Deploying Juice Shop to EC2...'
-                sshagent(credentials: [env.EC2_KEY_ID]) {
-                     sh """#!/bin/bash
-                        ssh -o StrictHostKeyChecking=no $WEB_HOST << 'ENDSSH'
-                            echo "🔍 Checking for any process on port $WEB_APP_PORT..."
-                            PID=\$(sudo lsof -t -i:$WEB_APP_PORT)
-                            if [ ! -z "\$PID" ]; then
-                                echo "🛑 Killing process \$PID using port $WEB_APP_PORT"
-                                sudo kill -9 \$PID || true
-                            else
-                                echo "✅ No process found on port $WEB_APP_PORT"
-                            fi
         
-                            echo "🧹 Removing old Docker container..."
-                            docker rm -f juice-shop || true
         
-                            echo "📦 Pulling Docker image: $IMAGE_NAME:$TAG"
-                            docker pull $IMAGE_NAME:$TAG
         
-                            echo "🚀 Running new Docker container..."
-                            docker run -d -p $WEB_APP_PORT:$WEB_APP_PORT --name juice-shop $IMAGE_NAME:$TAG
-        
-                            echo "✅ Deployment complete"
-                        ENDSSH
-                        sleep 20
-                    """
-                }
-            }
-        }
-        
-        /*
         stage('Clone Repository') {
             steps {
                 echo 'Cloning the GitHub Repository...'
@@ -163,6 +132,38 @@ pipeline {
                 }
             }
         }
+        // running
+        stage('Deploy App to AWS EC2') {
+            steps {
+                echo '🚀 Deploying Juice Shop to EC2...'
+                sshagent(credentials: [env.EC2_KEY_ID]) {
+                     sh """#!/bin/bash
+                        ssh -o StrictHostKeyChecking=no $WEB_HOST << 'ENDSSH'
+                            echo "🔍 Checking for any process on port $WEB_APP_PORT..."
+                            PID=\$(sudo lsof -t -i:$WEB_APP_PORT)
+                            if [ ! -z "\$PID" ]; then
+                                echo "🛑 Killing process \$PID using port $WEB_APP_PORT"
+                                sudo kill -9 \$PID || true
+                            else
+                                echo "✅ No process found on port $WEB_APP_PORT"
+                            fi
+        
+                            echo "🧹 Removing old Docker container..."
+                            docker rm -f juice-shop || true
+        
+                            echo "📦 Pulling Docker image: $IMAGE_NAME:$TAG"
+                            docker pull $IMAGE_NAME:$TAG
+        
+                            echo "🚀 Running new Docker container..."
+                            docker run -d -p $WEB_APP_PORT:$WEB_APP_PORT --name juice-shop $IMAGE_NAME:$TAG
+        
+                            echo "✅ Deployment complete"
+                        ENDSSH
+                        sleep 20
+                    """
+                }
+            }
+        }
         
         
        // running
@@ -210,7 +211,7 @@ pipeline {
                 }
             }
         }  
-        */
+        
     }
 
     post {
