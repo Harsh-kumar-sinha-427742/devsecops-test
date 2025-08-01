@@ -269,7 +269,22 @@ pipeline {
                 // You can also add scp commands if needed
             }
         }
-        
+        stage('Run Nikto Scan') {
+            steps {
+                echo 'Running Nikto scan on remote ZAP instance...'
+                sshagent(credentials: [env.EC2_KEY_ID]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST '
+                            mkdir -p ~/zap-work &&
+                            nikto -h $TARGET_URL -output ~/zap-work/nikto_report.html -Format html
+                        '
+                        echo "📥 Copying Nikto report to Jenkins workspace..."
+                        scp -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST:~/zap-work/nikto_report.html .
+                    """
+                    archiveArtifacts artifacts: 'nikto_report.html', onlyIfSuccessful: false
+                }
+            }
+        }       
     }
 
     post {
