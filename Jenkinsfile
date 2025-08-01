@@ -42,7 +42,7 @@ pipeline {
         }
         */
      // THis will work only when you have installed dependecy check locally
-        stage('Dependency Check (OWASP)') {
+  /*      stage('Dependency Check (OWASP)') {
             steps {
                 echo 'Running OWASP Dependency-Check...'
                 sh '''
@@ -58,7 +58,7 @@ pipeline {
             }
         }
 
-        
+*/        
         
         /* This will work only when NVD database start accepting api keys
         stage('Dependency Check (OWASP)') {
@@ -151,8 +151,8 @@ pipeline {
         }
 
        
-*/
-        /*
+
+        
         stage('Deploy to Server') {
             steps {
                 timeout(time: 3, unit: 'MINUTES') {
@@ -165,7 +165,7 @@ pipeline {
                 }
             }
         }
-        */
+     */   
 /*
         stage('Run ZAP DAST Scan (Baseline)') {
             steps {
@@ -180,7 +180,7 @@ pipeline {
                 archiveArtifacts artifacts: "${ZAP_REPORT_HTML}, ${ZAP_REPORT_XML}, ${ZAP_REPORT_JSON}", onlyIfSuccessful: false
             }
         } 
-        
+   */     
         stage('Build Project') {
             steps {
                 echo 'Building the Java project with Maven...'
@@ -225,7 +225,7 @@ pipeline {
                 }
             }
         }
-        */
+        
     }
 
     post {
