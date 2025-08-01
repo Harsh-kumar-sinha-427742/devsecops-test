@@ -66,6 +66,7 @@ pipeline {
                     sh """
                         echo '📤 Copying source repo to EC2...'
                         chmod -R u+rwx temp_repo
+                        ssh -o StrictHostKeyChecking=no $EC2_HOST 'rm -rf ~/temp_repo'
                         scp -o StrictHostKeyChecking=no -r temp_repo $EC2_HOST:~/temp_repo
         
                         echo '📦 Running Dependency-Check on EC2...'
