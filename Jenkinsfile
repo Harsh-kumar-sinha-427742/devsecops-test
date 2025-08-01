@@ -70,7 +70,7 @@ pipeline {
                         echo '📦 Running Dependency-Check on EC2...'
                         ssh -o StrictHostKeyChecking=no $EC2_HOST '
                             mkdir -p ~/odc-report &&
-                            dependency-check.sh \
+                            /opt/dependency-check/dependency-check/bin/dependency-check.sh \
                                 --project "Remote-Scan" \
                                 -s ~/temp_repo \
                                 -o ~/odc-report \
