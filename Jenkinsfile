@@ -8,7 +8,7 @@ pipeline {
         ZAP_REPORT_HTML = 'zap_report.html'
         ZAP_REPORT_XML  = 'zap_report.xml'
         ZAP_REPORT_JSON = 'zap_report.json'
-        TARGET_URL      = 'http://localhost:3000' // Replace with actual target
+        TARGET_URL      = 'http://16.171.149.143:3000' // Replace with actual target
         IMAGE_NAME = 'kumar0ndocker/juice-shop'
         TAG = 'v2'
         IP = '16.170.230.115'
@@ -227,7 +227,19 @@ pipeline {
                 }
             }
         }
-        
+          stage('Run ZAP DAST Scan (Baseline)') {
+            steps {
+                echo 'Running ZAP Baseline DAST Scan...'
+                sh '''
+                    docker run --rm \
+                      -v $WORKSPACE:/zap/wrk/:rw \
+                      zaproxy/zap-stable \
+                      zap-baseline.py -t $TARGET_URL \
+                      -r $ZAP_REPORT_HTML -x $ZAP_REPORT_XML -J $ZAP_REPORT_JSON || true
+                '''
+                archiveArtifacts artifacts: "${ZAP_REPORT_HTML}, ${ZAP_REPORT_XML}, ${ZAP_REPORT_JSON}", onlyIfSuccessful: false
+            }
+        }
     }
 
     post {
