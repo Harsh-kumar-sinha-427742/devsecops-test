@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DEPENDENCY_CHECK = '/home/rocky1/tools/dependency-check/bin/dependency-check.sh'
+        DEPENDENCY_CHECK = '/opt/dependency-check/dependency-check/bin/dependency-check.sh'
         SONAR_SCANNER = tool name: 'sonar-scanner'
         SONAR_URL =  'http://16.16.25.45:9000'
         ZAP_REPORT_HTML = 'zap_report.html'
@@ -41,20 +41,24 @@ pipeline {
             }
         }
         */
-/*      THis will work only when you have installed dependecy check locally
+     // THis will work only when you have installed dependecy check locally
         stage('Dependency Check (OWASP)') {
             steps {
                 echo 'Running OWASP Dependency-Check...'
                 sh '''
                     mkdir -p dependency-check-report
-                    cd temp_repo
-                    $DEPENDENCY_CHECK --project "Universal-SCA-Scan" --scan . --format ALL --out ../dependency-check-report || true
-                    cd ..
+                    /opt/dependency-check/dependency-check/bin/dependency-check.sh \
+                      --project "Universal-SCA-Scan" \
+                      --scan temp_repo \
+                      --format ALL \
+                      --enableExperimental \
+                      --out dependency-check-report || true
                 '''
                 archiveArtifacts artifacts: 'dependency-check-report/*', onlyIfSuccessful: false
             }
         }
-        */
+
+        
         
         /* This will work only when NVD database start accepting api keys
         stage('Dependency Check (OWASP)') {
@@ -176,7 +180,7 @@ pipeline {
                 archiveArtifacts artifacts: "${ZAP_REPORT_HTML}, ${ZAP_REPORT_XML}, ${ZAP_REPORT_JSON}", onlyIfSuccessful: false
             }
         } 
-        */
+        
         stage('Build Project') {
             steps {
                 echo 'Building the Java project with Maven...'
@@ -222,7 +226,7 @@ pipeline {
             }
         }
     }
-
+*/
     post {
         always {
             script {
