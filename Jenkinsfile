@@ -246,17 +246,24 @@ pipeline {
             }
         }
         
-           stage('Run ZAP DAST Scan (Baseline)') {
+        stage('Run ZAP DAST Scan (Baseline)') {
             steps {
                 echo 'Running ZAP Baseline DAST Scan...'
-                sh '''
-                    docker run --rm \
-                      -v $WORKSPACE:/zap/wrk/:rw \
-                      zaproxy/zap-stable \
-                      zap-baseline.py -t $TARGET_URL \
-                      -r $ZAP_REPORT_HTML -x $ZAP_REPORT_XML -J $ZAP_REPORT_JSON || true
-                '''
-                archiveArtifacts artifacts: "${ZAP_REPORT_HTML}, ${ZAP_REPORT_XML}, ${ZAP_REPORT_JSON}", onlyIfSuccessful: false
+                sshagent(credentials: [env.EC2_KEY_ID]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST '
+                            mkdir -p ~/zap-work && chmod -R 777 ~/zap-work &&
+                            docker run --rm \
+                                -v ~/zap-work:/zap/wrk/:rw \
+                                zaproxy/zap-stable \
+                                zap-baseline.py -t $TARGET_URL \
+                                -r zap_report.html -x zap_report.xml -J zap_report.json || true
+                        '
+                    """
+                }
+        
+                // Copy the reports back (optional, if needed on Jenkins instance)
+                // You can also add scp commands if needed
             }
         }
         
