@@ -246,14 +246,12 @@ pipeline {
             }
         }
         
-          stage('Run ZAP DAST Scan (Baseline)') {
+           stage('Run ZAP DAST Scan (Baseline)') {
             steps {
                 echo 'Running ZAP Baseline DAST Scan...'
                 sh '''
-                    mkdir -p zap-report
-                    chmod 777 zap-report
                     docker run --rm \
-                      -v $WORKSPACE:/zap/wrk/:rwx \
+                      -v $WORKSPACE:/zap/wrk/:rw \
                       zaproxy/zap-stable \
                       zap-baseline.py -t $TARGET_URL \
                       -r $ZAP_REPORT_HTML -x $ZAP_REPORT_XML -J $ZAP_REPORT_JSON || true
