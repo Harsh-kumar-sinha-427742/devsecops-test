@@ -245,7 +245,7 @@ pipeline {
                 }
             }
         }
-        /*
+        
           stage('Run ZAP DAST Scan (Baseline)') {
             steps {
                 echo 'Running ZAP Baseline DAST Scan...'
@@ -259,7 +259,7 @@ pipeline {
                 archiveArtifacts artifacts: "${ZAP_REPORT_HTML}, ${ZAP_REPORT_XML}, ${ZAP_REPORT_JSON}", onlyIfSuccessful: false
             }
         }
-        */
+        
     }
 
     post {
