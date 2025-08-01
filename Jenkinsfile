@@ -61,24 +61,32 @@ pipeline {
         */
         stage('Remote Dependency Check (Offline)') {
             steps {
-                echo '🔍 Running Dependency Check offline with no-update...'
+                echo '🔍 Running Dependency Check offline with no-update on EC2...'
                 sshagent(credentials: [env.EC2_KEY_ID]) {
                     sh """
+                        echo '📤 Copying source repo to EC2...'
+                        scp -o StrictHostKeyChecking=no -r temp_repo $EC2_HOST:~/temp_repo
+        
+                        echo '📦 Running Dependency-Check on EC2...'
                         ssh -o StrictHostKeyChecking=no $EC2_HOST '
-                            cd ~/temp_repo &&
                             mkdir -p ~/odc-report &&
-                            dependency-check.sh -s . \
+                            dependency-check.sh \
+                                --project "Remote-Scan" \
+                                -s ~/temp_repo \
                                 -o ~/odc-report \
                                 -f ALL \
                                 --data ~/odc-data \
                                 --noupdate || true
                         '
+        
+                        echo '📥 Copying report back to Jenkins workspace...'
                         scp -o StrictHostKeyChecking=no $EC2_HOST:~/odc-report/dependency-check-report.* .
                     """
                 }
                 archiveArtifacts artifacts: 'dependency-check-report.*', onlyIfSuccessful: false
             }
         }
+
 
 
       
