@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DEPENDENCY_CHECK = '/opt/dependency-check/dependency-check/bin/dependency-check.sh'
+        //DEPENDENCY_CHECK = '/opt/dependency-check/dependency-check/bin/dependency-check.sh'
         SONAR_SCANNER = tool name: 'sonar-scanner'
         SONAR_URL =  'http://16.16.25.45:9000'
         ZAP_REPORT_HTML = 'zap_report.html'
