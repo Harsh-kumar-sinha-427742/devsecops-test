@@ -41,7 +41,7 @@ pipeline {
             }
         }
         */
-     // THis will work only when you have installed dependecy check locally
+     // This will work only when you have installed dependecy check locally
   /*      stage('Dependency Check (OWASP)') {
             steps {
                 echo 'Running OWASP Dependency-Check...'
