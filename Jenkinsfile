@@ -276,7 +276,13 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST '
                             mkdir -p ~/zap-work &&
-                            nikto -h $TARGET_URL -output ~/zap-work/nikto_report.html -Format html
+                            nikto -h $TARGET_URL -output ~/zap-work/nikto_report.html -Format html \\
+                            -Display V \\
+                            -Plugins ALL \\
+                            -Tuning 1234567890 \\
+                            -Cgidirs all \\
+                            -Useragent "NiktoScanner/1.1" \\
+                            -no404 
                         '
                         echo "📥 Copying Nikto report to Jenkins workspace..."
                         scp -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST:~/zap-work/nikto_report.html .
