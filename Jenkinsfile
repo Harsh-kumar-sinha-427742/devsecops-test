@@ -261,6 +261,7 @@ pipeline {
                                 -r zap_report.html -x zap_report.xml -J zap_report.json || true
                         '
                     """
+                    archiveArtifacts artifacts: "${ZAP_REPORT_HTML}, ${ZAP_REPORT_XML}, ${ZAP_REPORT_JSON}", onlyIfSuccessful: false
                 }
         
                 // Copy the reports back (optional, if needed on Jenkins instance)
