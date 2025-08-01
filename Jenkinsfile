@@ -65,7 +65,7 @@ pipeline {
                 sshagent(credentials: [env.EC2_KEY_ID]) {
                     sh """
                         echo '📤 Copying source repo to EC2...'
-                        "chmod -R u+rwx temp_repo"
+                        chmod -R u+rwx temp_repo
                         scp -o StrictHostKeyChecking=no -r temp_repo $EC2_HOST:~/temp_repo
         
                         echo '📦 Running Dependency-Check on EC2...'
