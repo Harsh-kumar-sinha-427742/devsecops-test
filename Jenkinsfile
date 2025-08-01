@@ -11,7 +11,7 @@ pipeline {
         TARGET_URL      = 'http://localhost:3000' // Replace with actual target
         IMAGE_NAME = 'kumar0ndocker/juice-shop'
         TAG = 'v2'
-        IP = '51.21.199.171'
+        IP = '16.170.230.115'
         EC2_HOST          = "ubuntu@${IP}"
         EC2_APP_PORT      = '3000'
         EC2_KEY_ID        = 'ec2-ssh-key'
