@@ -250,6 +250,8 @@ pipeline {
             steps {
                 echo 'Running ZAP Baseline DAST Scan...'
                 sh '''
+                    mkdir -p zap-report
+                    chmod 777 zap-report
                     docker run --rm \
                       -v $WORKSPACE:/zap/wrk/:rw \
                       zaproxy/zap-stable \
