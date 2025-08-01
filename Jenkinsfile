@@ -8,12 +8,14 @@ pipeline {
         ZAP_REPORT_HTML = 'zap_report.html'
         ZAP_REPORT_XML  = 'zap_report.xml'
         ZAP_REPORT_JSON = 'zap_report.json'
-        TARGET_URL      = 'http://16.171.149.143:3000' // Replace with actual target(deployed juice-shop
+        TARGET_URL      = "http://${IP_HOSTED}:3000" // Replace with actual target(deployed juice-shop
         IMAGE_NAME = 'kumar0ndocker/juice-shop'
         TAG = 'v2'
+        IP_HOSTED = '13.60.182.131' //juice shop hosted ip
+        WEB_HOST = "ubuntu@${IP_HOSTED}"
         IP = '16.170.162.214'                          //jenkins-server ip
         EC2_HOST          = "ubuntu@${IP}"
-        EC2_APP_PORT      = '3000'
+        WEB_APP_PORT      = '3000'
         EC2_KEY_ID        = 'ec2-ssh-key'
         ZAP_INSTANCE_HOST = "ubuntu@13.60.251.28"       //DAST -SCAN
     }
@@ -26,14 +28,14 @@ pipeline {
                 echo '🚀 Deploying Juice Shop to EC2...'
                 sshagent(credentials: [env.EC2_KEY_ID]) {
                      sh """#!/bin/bash
-                        ssh -o StrictHostKeyChecking=no $EC2_HOST << 'ENDSSH'
-                            echo "🔍 Checking for any process on port $EC2_APP_PORT..."
-                            PID=\$(sudo lsof -t -i:$EC2_APP_PORT)
+                        ssh -o StrictHostKeyChecking=no $WEB_HOST << 'ENDSSH'
+                            echo "🔍 Checking for any process on port $WEB_APP_PORT..."
+                            PID=\$(sudo lsof -t -i:$WEB_APP_PORT)
                             if [ ! -z "\$PID" ]; then
-                                echo "🛑 Killing process \$PID using port $EC2_APP_PORT"
+                                echo "🛑 Killing process \$PID using port $WEB_APP_PORT"
                                 sudo kill -9 \$PID || true
                             else
-                                echo "✅ No process found on port $EC2_APP_PORT"
+                                echo "✅ No process found on port $WEB_APP_PORT"
                             fi
         
                             echo "🧹 Removing old Docker container..."
@@ -43,7 +45,7 @@ pipeline {
                             docker pull $IMAGE_NAME:$TAG
         
                             echo "🚀 Running new Docker container..."
-                            docker run -d -p $EC2_APP_PORT:$EC2_APP_PORT --name juice-shop $IMAGE_NAME:$TAG
+                            docker run -d -p $WEB_APP_PORT:$WEB_APP_PORT --name juice-shop $IMAGE_NAME:$TAG
         
                             echo "✅ Deployment complete"
                         ENDSSH
