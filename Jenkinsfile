@@ -27,7 +27,7 @@ pipeline {
                 '''
             }
         }
-        // Trufflehog is installed locally
+        // TruffleHog is installed locally
         /*
         stage('Secret Scan (TruffleHog)') {
             steps {
