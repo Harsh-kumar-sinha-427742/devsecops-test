@@ -219,7 +219,7 @@ pipeline {
                 echo '🚀 Deploying Juice Shop to EC2...'
                 sshagent(credentials: [env.EC2_KEY_ID]) {
                      sh """#!/bin/bash
-                        ssh -o StrictHostKeyChecking=no $EC2_HOST << 'EOF'
+                        ssh -o StrictHostKeyChecking=no $EC2_HOST << 'ENDSSH'
                             echo "🔍 Checking for any process on port $EC2_APP_PORT..."
                             PID=\$(sudo lsof -t -i:$EC2_APP_PORT)
                             if [ ! -z "\$PID" ]; then
@@ -239,7 +239,7 @@ pipeline {
                             docker run -d -p $EC2_APP_PORT:$EC2_APP_PORT --name juice-shop $IMAGE_NAME:$TAG
         
                             echo "✅ Deployment complete"
-                        EOF
+                        ENDSSH
                         sleep 20
                     """
                 }
