@@ -58,8 +58,30 @@ pipeline {
                 archiveArtifacts artifacts: 'dependency-check-report/*', onlyIfSuccessful: false
             }
         }
+        */
+        stage('Remote Dependency Check (Offline)') {
+            steps {
+                echo '🔍 Running Dependency Check offline with no-update...'
+                sshagent(credentials: [env.EC2_KEY_ID]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no $EC2_HOST '
+                            cd ~/temp_repo &&
+                            mkdir -p ~/odc-report &&
+                            dependency-check.sh -s . \
+                                -o ~/odc-report \
+                                -f ALL \
+                                --data ~/odc-data \
+                                --noupdate || true
+                        '
+                        scp -o StrictHostKeyChecking=no $EC2_HOST:~/odc-report/dependency-check-report.* .
+                    """
+                }
+                archiveArtifacts artifacts: 'dependency-check-report.*', onlyIfSuccessful: false
+            }
+        }
 
-*/        
+
+      
         
         /* This will work only when NVD database start accepting api keys
         stage('Dependency Check (OWASP)') {
@@ -215,6 +237,7 @@ pipeline {
             }
         }
         */
+        /* running
         stage('Deploy App to AWS EC2') {
             steps {
                 echo '🚀 Deploying Juice Shop to EC2...'
@@ -246,7 +269,8 @@ pipeline {
                 }
             }
         }
-        
+        */
+   /*     running
         stage('Run ZAP DAST Scan (Baseline)') {
             steps {
                 echo 'Running ZAP Baseline DAST Scan...'
@@ -290,7 +314,8 @@ pipeline {
                     archiveArtifacts artifacts: 'nikto_report.html', onlyIfSuccessful: false
                 }
             }
-        }       
+        }  
+        */
     }
 
     post {
