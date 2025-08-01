@@ -11,7 +11,7 @@ pipeline {
         TARGET_URL      = 'http://16.171.149.143:3000' // Replace with actual target
         IMAGE_NAME = 'kumar0ndocker/juice-shop'
         TAG = 'v2'
-        IP = '16.170.230.115'
+        IP = '16.170.162.214'
         EC2_HOST          = "ubuntu@${IP}"
         EC2_APP_PORT      = '3000'
         EC2_KEY_ID        = 'ec2-ssh-key'
@@ -29,9 +29,9 @@ pipeline {
         }
         // TruffleHog is installed locally
         /*
-        stage('Secret Scan (TruffleHog)') {
+        stage('Secret Scan (Trufflehog)') {
             steps {
-                echo 'Running TruffleHog on latest commit only...'
+                echo 'Running Trufflehog on latest commit only...'
                 sh '''
                   cd temp_repo
                   trufflehog --regex --entropy=True --max_depth=10 . > ../trufflehog_report.json || true
