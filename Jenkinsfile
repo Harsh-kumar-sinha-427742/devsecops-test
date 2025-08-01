@@ -253,7 +253,7 @@ pipeline {
                     mkdir -p zap-report
                     chmod 777 zap-report
                     docker run --rm \
-                      -v $WORKSPACE:/zap/wrk/:rw \
+                      -v $WORKSPACE:/zap/wrk/:rwx \
                       zaproxy/zap-stable \
                       zap-baseline.py -t $TARGET_URL \
                       -r $ZAP_REPORT_HTML -x $ZAP_REPORT_XML -J $ZAP_REPORT_JSON || true
