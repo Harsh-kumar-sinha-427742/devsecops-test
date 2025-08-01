@@ -180,7 +180,8 @@ pipeline {
                 archiveArtifacts artifacts: "${ZAP_REPORT_HTML}, ${ZAP_REPORT_XML}, ${ZAP_REPORT_JSON}", onlyIfSuccessful: false
             }
         } 
-   */     
+   */ 
+        /* ruuning hai 
         stage('Build Project') {
             steps {
                 echo 'Building the Java project with Maven...'
@@ -212,6 +213,7 @@ pipeline {
                 }
             }
         }
+        */
         stage('Deploy App to AWS EC2') {
             steps {
                 echo '🚀 Deploying Juice Shop to EC2...'
@@ -233,7 +235,7 @@ pipeline {
             script {
                 echo 'Cleaning up temporary files...'
                 sh '''
-                    rm -rf temp_repo dependency-check-report trufflehog_report.txt \
+                    rm -rf temp_repo dependency-check-report trufflehog_report.txt juice-shop \
                            $ZAP_REPORT_HTML $ZAP_REPORT_XML $ZAP_REPORT_JSON || true
                 '''
             }
