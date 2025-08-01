@@ -15,6 +15,7 @@ pipeline {
         EC2_HOST          = "ubuntu@${IP}"
         EC2_APP_PORT      = '3000'
         EC2_KEY_ID        = 'ec2-ssh-key'
+        ZAP_INSTANCE_HOST = '13.60.251.28'
     }
 
     stages {
