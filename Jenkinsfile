@@ -4,20 +4,23 @@ pipeline {
     environment {
         //DEPENDENCY_CHECK = '/opt/dependency-check/dependency-check/bin/dependency-check.sh'
         SONAR_SCANNER = tool name: 'sonar-scanner'
-        SONAR_URL =  'http://16.170.159.249:9000'   //ip of sonarqube
+        SONAR_URL =  'http://16.170.158.224:9000'   //ip of sonarqube
         ZAP_REPORT_HTML = 'zap_report.html'
         ZAP_REPORT_XML  = 'zap_report.xml'
         ZAP_REPORT_JSON = 'zap_report.json'
         TARGET_URL      = "http://${IP_HOSTED}:3000" // Replace with actual target(deployed juice-shop
         IMAGE_NAME = 'kumar0ndocker/juice-shop'
-        TAG = 'v3'
-        IP_HOSTED = '13.60.182.131' //juice shop hosted ip
+        TAG = 'v4'
+        IP_HOSTED = '56.228.26.130' //juice shop hosted ip
         WEB_HOST = "ubuntu@${IP_HOSTED}"
-        IP = '16.170.162.214'                          //jenkins-server ip
+        IP = '51.21.248.70'                          //jenkins-server ip
         EC2_HOST          = "ubuntu@${IP}"             // for jenkins ssh
         WEB_APP_PORT      = '3000'
         EC2_KEY_ID        = 'ec2-ssh-key'
-        ZAP_INSTANCE_HOST = "ubuntu@13.49.74.223"       //DAST -SCAN
+        ZAP_INSTANCE_HOST = "ubuntu@16.171.233.112"       //DAST -SCAN
+        IP_DD = '51.21.255.80'
+        DEFECTDOJO_URL = "http://${IP_DD}:8080"
+        ENGAGEMENT_ID = '1'
     }
 
     stages {
@@ -197,7 +200,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST '
                             mkdir -p ~/zap-work &&
-                            nikto -h $TARGET_URL -output ~/zap-work/nikto_report.html -Format html \\
+                            nikto -h $TARGET_URL -output ~/zap-work/nikto_report.json -Format json \\
                             -Display V \\
                             -Plugins ALL \\
                             -Tuning 1234567890 \\
@@ -206,12 +209,82 @@ pipeline {
                             -no404 
                         '
                         echo " Copying Nikto report to Jenkins workspace..."
-                        scp -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST:~/zap-work/nikto_report.html .
+                        scp -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST:~/zap-work/nikto_report.json .
                     """
-                    archiveArtifacts artifacts: 'nikto_report.html', onlyIfSuccessful: false
+                    archiveArtifacts artifacts: 'nikto_report.json', onlyIfSuccessful: false
                 }
             }
-        }  
+        }
+         stage('Upload TruffleHog Report to DefectDojo') {
+            steps {
+                withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
+                    sh '''
+                        if [ -f trufflehog_report.json ]; then
+                            curl -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+                              -H "Authorization: Token $DD_API_KEY" \
+                              -F "file=@trufflehog_report.json" \
+                              -F "scan_type=Trufflehog Scan" \
+                              -F "engagement=$ENGAGEMENT_ID" \
+                              -F "active=true" -F "verified=true" -F "close_old_findings=true"
+                        fi
+                    '''
+                }
+            }
+        }
+        
+        
+        stage('Upload Dependency-Check Report to DefectDojo') {
+            steps {
+                withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
+                    sh '''
+                        if [ -f dependency-check-report/dependency-check-report.xml ]; then
+                            curl -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+                              -H "Authorization: Token $DD_API_KEY" \
+                              -F "file=@dependency-check-report/dependency-check-report.xml" \
+                              -F "scan_type=Dependency Check Scan" \
+                              -F "engagement=$ENGAGEMENT_ID" \
+                              -F "active=true" -F "verified=true" -F "close_old_findings=true"
+                        fi
+                    '''
+                }
+            }
+        } 
+               
+        stage('Upload ZAP Report to DefectDojo') {
+            steps {
+                withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
+                    sh '''
+                        if [ -f $ZAP_REPORT_XML ]; then
+                            curl -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+                              -H "Authorization: Token $DD_API_KEY" \
+                              -F "file=@$ZAP_REPORT_XML" \
+                              -F "scan_type=ZAP Scan" \
+                              -F "engagement=$ENGAGEMENT_ID" \
+                              -F "active=true" -F "verified=true" -F "close_old_findings=true"
+                        fi
+                    '''
+                }
+            }
+        }
+        stage('Upload Nikto Report to DefectDojo') {
+            steps {
+                withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
+                    sh '''
+                        if [ -f nikto_report.json ]; then
+                            curl -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
+                              -H "Authorization: Token $DD_API_KEY" \
+                              -F "file=@nikto_report.json" \
+                              -F "scan_type=Nikto Scan" \
+                              -F "engagement=$ENGAGEMENT_ID" \
+                              -F "active=true" \
+                              -F "verified=true" \
+                              -F "close_old_findings=true"
+                        fi
+                    '''
+                }
+            }
+        }
+
         
     }
 
@@ -220,7 +293,7 @@ pipeline {
             script {
                 echo 'Cleaning up temporary files...'
                 sh '''
-                    rm -rf temp_repo dependency-check-report trufflehog_report.txt nikto_report.html juice-shop \
+                    rm -rf temp_repo dependency-check-report trufflehog_report.txt nikto_report.json juice-shop \
                            $ZAP_REPORT_HTML $ZAP_REPORT_XML $ZAP_REPORT_JSON || true
                 '''
             }
