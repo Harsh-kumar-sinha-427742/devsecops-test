@@ -10,7 +10,7 @@ pipeline {
         ZAP_REPORT_JSON = 'zap_report.json'
         TARGET_URL      = "http://${IP_HOSTED}:3000" // Replace with actual target(deployed juice-shop
         IMAGE_NAME = 'kumar0ndocker/juice-shop'
-        TAG = 'v4'
+        TAG = 'v4.1'
         IP_HOSTED = '56.228.26.130' //juice shop hosted ip
         WEB_HOST = "ubuntu@${IP_HOSTED}"
         IP = '51.21.248.70'                          //jenkins-server ip
@@ -205,7 +205,7 @@ pipeline {
                             -Plugins ALL \\
                             -Tuning 1234567890 \\
                             -Cgidirs all \\
-                            -Useragent "NiktoScanner/1.1" \\
+                            -useragent "NiktoScanner/1.1" \\
                             -no404 
                         '
                         echo " Copying Nikto report to Jenkins workspace..."
