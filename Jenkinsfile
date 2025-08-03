@@ -49,17 +49,17 @@ pipeline {
         }
         
      
-        stage('Remote Dependency Check (Offline)') {
+        stage('Software Composition Analysis') {
             steps {
                 echo '🔍 Running Dependency Check offline with no-update on EC2...'
                 sshagent(credentials: [env.EC2_KEY_ID]) {
                     sh """
-                        echo '📤 Copying source repo to EC2...'
+                        echo ' Copying source repo to EC2...'
                         chmod -R u+rwx temp_repo
                         ssh -o StrictHostKeyChecking=no $EC2_HOST 'rm -rf ~/temp_repo'
                         scp -o StrictHostKeyChecking=no -r temp_repo $EC2_HOST:~/temp_repo
         
-                        echo '📦 Running Dependency-Check on EC2...'
+                        echo ' Running Dependency-Check on EC2...'
                         ssh -o StrictHostKeyChecking=no $EC2_HOST '
                             mkdir -p ~/odc-report &&
                             /opt/dependency-check/dependency-check/bin/dependency-check.sh \
@@ -71,7 +71,7 @@ pipeline {
                                 --noupdate || true
                         '
         
-                        echo '📥 Copying report back to Jenkins workspace...'
+                        echo ' Copying report back to Jenkins workspace...'
                         scp -o StrictHostKeyChecking=no $EC2_HOST:~/odc-report/dependency-check-report.* .
                     """
                 }
@@ -136,26 +136,26 @@ pipeline {
         // running
         stage('Deploy App to AWS EC2') {
             steps {
-                echo '🚀 Deploying Juice Shop to EC2...'
+                echo ' Deploying Juice Shop to EC2...'
                 sshagent(credentials: [env.EC2_KEY_ID]) {
                      sh """#!/bin/bash
                         ssh -o StrictHostKeyChecking=no $WEB_HOST << 'ENDSSH'
                             echo "🔍 Checking for any process on port $WEB_APP_PORT..."
                             PID=\$(sudo lsof -t -i:$WEB_APP_PORT)
                             if [ ! -z "\$PID" ]; then
-                                echo "🛑 Killing process \$PID using port $WEB_APP_PORT"
+                                echo " Killing process \$PID using port $WEB_APP_PORT"
                                 sudo kill -9 \$PID || true
                             else
                                 echo "✅ No process found on port $WEB_APP_PORT"
                             fi
         
-                            echo "🧹 Removing old Docker container..."
+                            echo " Removing old Docker container..."
                             docker rm -f juice-shop || true
         
-                            echo "📦 Pulling Docker image: $IMAGE_NAME:$TAG"
+                            echo " Pulling Docker image: $IMAGE_NAME:$TAG"
                             docker pull $IMAGE_NAME:$TAG
         
-                            echo "🚀 Running new Docker container..."
+                            echo " Running new Docker container..."
                             docker run -d -p $WEB_APP_PORT:$WEB_APP_PORT --name juice-shop $IMAGE_NAME:$TAG
         
                             echo "✅ Deployment complete"
@@ -205,7 +205,7 @@ pipeline {
                             -Useragent "NiktoScanner/1.1" \\
                             -no404 
                         '
-                        echo "📥 Copying Nikto report to Jenkins workspace..."
+                        echo " Copying Nikto report to Jenkins workspace..."
                         scp -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST:~/zap-work/nikto_report.html .
                     """
                     archiveArtifacts artifacts: 'nikto_report.html', onlyIfSuccessful: false
@@ -220,7 +220,7 @@ pipeline {
             script {
                 echo 'Cleaning up temporary files...'
                 sh '''
-                    rm -rf temp_repo dependency-check-report trufflehog_report.txt juice-shop \
+                    rm -rf temp_repo dependency-check-report trufflehog_report.txt nikto_report.html juice-shop \
                            $ZAP_REPORT_HTML $ZAP_REPORT_XML $ZAP_REPORT_JSON || true
                 '''
             }
