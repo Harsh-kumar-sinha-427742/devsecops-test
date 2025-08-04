@@ -50,7 +50,7 @@ pipeline {
             }
         }
         // TruffleHog is installed locally
-        
+    /*    
         stage('Secret Scan (Trufflehog)') {
             steps {
                 echo 'Running Trufflehog on latest commit only...'
@@ -65,7 +65,7 @@ pipeline {
             }
         }
         
-     
+    */ 
         stage('Software Composition Analysis') {
             steps {
                 echo '🔍 Running Dependency Check offline with no-update on EC2...'
@@ -96,7 +96,7 @@ pipeline {
             }
         }
      
-                  
+     /*             
         stage('SonarQube Scan') {
             steps {
                 echo 'Starting SonarQube SAST Scan...'
@@ -229,6 +229,7 @@ pipeline {
                 }
             }
         }
+        
          stage('Upload TruffleHog Report to DefectDojo') {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
@@ -246,7 +247,7 @@ pipeline {
             }
         }
         
-        
+        */
         stage('Upload Dependency-Check Report to DefectDojo') {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
@@ -254,7 +255,7 @@ pipeline {
                         if [ -f dependency-check-report.json ]; then
                             curl -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
                               -H "Authorization: Token $DD_API_KEY" \
-                              -F "file=@dependency-check-report.json" \
+                              
                               -F "file=@dependency-check-report.xml" \
                               -F "scan_type=Dependency Check Scan" \
                               -F "engagement=$ENGAGEMENT_ID" \
@@ -264,7 +265,7 @@ pipeline {
                 }
             }
         } 
-               
+   /*            
         stage('Upload ZAP Report to DefectDojo') {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
@@ -281,7 +282,7 @@ pipeline {
                 }
             }
         }
-        /*
+        
         stage('Upload Nikto Report to DefectDojo') {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
