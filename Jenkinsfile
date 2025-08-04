@@ -36,10 +36,8 @@ pipeline {
     }
 
     stages {
-        
-        
-        
-        
+              
+                
         stage('Clone Repository') {
             steps {
                 echo 'Cloning the GitHub Repository...'
@@ -65,7 +63,7 @@ pipeline {
             }
         }
         
-    */ 
+     
         stage('Software Composition Analysis') {
             steps {
                 echo '🔍 Running Dependency Check offline with no-update on EC2...'
@@ -95,7 +93,7 @@ pipeline {
                 archiveArtifacts artifacts: 'dependency-check-report.*', onlyIfSuccessful: false
             }
         }
-     
+     */
      /*             
         stage('SonarQube Scan') {
             steps {
@@ -114,7 +112,7 @@ pipeline {
                 }
             }
         }
-        
+      */  
         
    
         //running h
@@ -229,7 +227,7 @@ pipeline {
                 }
             }
         }
-        
+      /*  
          stage('Upload TruffleHog Report to DefectDojo') {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
@@ -247,7 +245,7 @@ pipeline {
             }
         }
         
-        */
+        
         stage('Upload Dependency-Check Report to DefectDojo') {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
@@ -264,7 +262,7 @@ pipeline {
                 }
             }
         } 
-   /*            
+   */           
         stage('Upload ZAP Report to DefectDojo') {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
@@ -300,7 +298,7 @@ pipeline {
                 }
             }
         }
-*/
+
         
     }
 
