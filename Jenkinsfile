@@ -28,7 +28,7 @@ pipeline {
         //DEFECTDOJO-CONFIGURATION
         IP_DD = '51.21.246.197'      //DEFECT-DOJO IP
         DEFECTDOJO_URL = "http://${IP_DD}:8080"
-        ENGAGEMENT_ID = '1'  
+        ENGAGEMENT_ID = '2'  
   
   
         
