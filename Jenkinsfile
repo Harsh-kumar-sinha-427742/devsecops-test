@@ -218,7 +218,7 @@ pipeline {
                             -Plugins ALL \\
                             -Tuning 1234567890 \\
                             -Cgidirs all \\
-                            -Useragent "NiktoScanner/1.1" \\
+                            -useragent "NiktoScanner/1.1" \\
                             -no404 
                         '
                         echo " Copying Nikto report to Jenkins workspace..."
