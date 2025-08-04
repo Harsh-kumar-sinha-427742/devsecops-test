@@ -8,7 +8,7 @@ pipeline {
 
         //Sonarqube-Configuration
         SONAR_SCANNER = tool name: 'sonar-scanner'
-        SONAR_URL =  'http://16.170.158.224:9000'   //ip of sonarqube
+        SONAR_URL =  'http://56.228.10.151:9000'   //ip of sonarqube
 
         //Application{Juice-shop}configuration
         IP_HOSTED = '13.60.250.22' //juice shop hosted ip
