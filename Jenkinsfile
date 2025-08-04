@@ -56,6 +56,7 @@ pipeline {
                 echo 'Running Trufflehog on latest commit only...'
                 sh '''
                   cd temp_repo
+                  trufflehog --regex --entropy=True --max_depth=10 . > ../trufflehog_report.json || true
                   trufflehog --json --max_depth=10 . > ../trufflehog_report.json || true
                   
                   cd ..
@@ -250,10 +251,11 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
                     sh '''
-                        if [ -f dependency-check-report/dependency-check-report.json ]; then
+                        if [ -f dependency-check-report.json ]; then
                             curl -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
                               -H "Authorization: Token $DD_API_KEY" \
                               -F "file=@dependency-check-report.json" \
+                              -F "file=@dependency-check-report.xml" \
                               -F "scan_type=Dependency Check Scan" \
                               -F "engagement=$ENGAGEMENT_ID" \
                               -F "active=true" -F "verified=true" -F "close_old_findings=true"
