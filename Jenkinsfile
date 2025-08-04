@@ -252,10 +252,10 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
                     sh '''
-                        if [ -f dependency-check-report.xml ]; then
+                        if [ -f dependency-check-report.json ]; then
                             curl -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
                               -H "Authorization: Token $DD_API_KEY" \
-                              -F "file=@dependency-check-report.xml" \
+                              -F "file=@dependency-check-report.json" \
                               -F "scan_type=Dependency Check Scan" \
                               -F "engagement=$ENGAGEMENT_ID" \
                               -F "active=true" -F "verified=true" -F "close_old_findings=true"
