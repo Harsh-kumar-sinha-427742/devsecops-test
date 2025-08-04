@@ -213,7 +213,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST '
                             mkdir -p ~/zap-work &&
-                            nikto -h $TARGET_URL -output ~/zap-work/nikto_report.xml -Format xml \\
+                            nikto -h $TARGET_URL -output ~/zap-work/nikto_report.html -Format html \\
                             -Display V \\
                             -Plugins ALL \\
                             -Tuning 1234567890 \\
@@ -221,9 +221,9 @@ pipeline {
                             -no404 
                         '
                         echo " Copying Nikto report to Jenkins workspace..."
-                        scp -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST:~/zap-work/nikto_report.xml .
+                        scp -o StrictHostKeyChecking=no $ZAP_INSTANCE_HOST:~/zap-work/nikto_report.html .
                     """
-                    archiveArtifacts artifacts: 'nikto_report.xml', onlyIfSuccessful: false
+                    archiveArtifacts artifacts: 'nikto_report.html', onlyIfSuccessful: false
                 }
             }
         }
@@ -284,10 +284,10 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
                     sh '''
-                        if [ -f nikto_report.xml ]; then
+                        if [ -f nikto_report.html ]; then
                             curl -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
                               -H "Authorization: Token $DD_API_KEY" \
-                              -F "file=@nikto_report.xml" \
+                              -F "file=@nikto_report.html" \
                               -F "scan_type=Nikto Scan" \
                               -F "engagement=$ENGAGEMENT_ID" \
                               -F "active=true" \
@@ -307,7 +307,7 @@ pipeline {
             script {
                 echo 'Cleaning up temporary files...'
                 sh '''
-                    rm -rf temp_repo dependency-check-report trufflehog_report.txt nikto_report.xml juice-shop \
+                    rm -rf temp_repo dependency-check-report trufflehog_report.json trufflehog_report.txt nikto_report.html juice-shop \
                            $ZAP_REPORT_HTML $ZAP_REPORT_XML $ZAP_REPORT_JSON || true
                 '''
             }
