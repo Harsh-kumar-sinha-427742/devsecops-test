@@ -255,7 +255,7 @@ pipeline {
                         if [ -f dependency-check-report.xml ]; then
                             curl -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
                               -H "Authorization: Token $DD_API_KEY" \
-                              -F "file=@dependency-check-report.json" \
+                              -F "file=@dependency-check-report.xml" \
                               -F "scan_type=Dependency Check Scan" \
                               -F "engagement=$ENGAGEMENT_ID" \
                               -F "active=true" -F "verified=true" -F "close_old_findings=true"
