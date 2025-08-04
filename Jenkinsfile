@@ -28,15 +28,14 @@ pipeline {
         //DEFECTDOJO-CONFIGURATION
         IP_DD = '51.21.246.197'      //DEFECT-DOJO IP
         DEFECTDOJO_URL = "http://${IP_DD}:8080"
-        ENGAGEMENT_ID = '1'      
-        
-        
-       
+        ENGAGEMENT_ID = '1'  
+  
+  
         
     }
 
     stages {
-              
+           
                 
         stage('Clone Repository') {
             steps {
@@ -48,7 +47,7 @@ pipeline {
             }
         }
         // TruffleHog is installed locally
-    /*    
+      
         stage('Secret Scan (Trufflehog)') {
             steps {
                 echo 'Running Trufflehog on latest commit only...'
@@ -93,8 +92,8 @@ pipeline {
                 archiveArtifacts artifacts: 'dependency-check-report.*', onlyIfSuccessful: false
             }
         }
-     */
-     /*             
+     
+                  
         stage('SonarQube Scan') {
             steps {
                 echo 'Starting SonarQube SAST Scan...'
@@ -112,9 +111,9 @@ pipeline {
                 }
             }
         }
-      */  
+       
         
-   /*
+   
         //running h
         stage('Build Project') {
             steps {
@@ -148,7 +147,7 @@ pipeline {
                 }
             }
         }
-        */
+        
         // running
         stage('Deploy App to AWS EC2') {
             steps {
@@ -227,7 +226,7 @@ pipeline {
                 }
             }
         }
-      /*  
+        
          stage('Upload TruffleHog Report to DefectDojo') {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
@@ -262,7 +261,7 @@ pipeline {
                 }
             }
         } 
-   */           
+              
         stage('Upload ZAP Report to DefectDojo') {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
