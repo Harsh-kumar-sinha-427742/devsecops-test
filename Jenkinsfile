@@ -2,25 +2,37 @@ pipeline {
     agent any
 
     environment {
-        //DEPENDENCY_CHECK = '/opt/dependency-check/dependency-check/bin/dependency-check.sh'
+        //Jenkins_instance ip
+        IP = '13.48.48.24'                    //jenkins-server ip
+        EC2_HOST = "ubuntu@${IP}"             // for jenkins ssh
+
+        //Sonarqube-Configuration
         SONAR_SCANNER = tool name: 'sonar-scanner'
         SONAR_URL =  'http://16.170.158.224:9000'   //ip of sonarqube
+
+        //Application{Juice-shop}configuration
+        IP_HOSTED = '13.60.250.22' //juice shop hosted ip
+        IMAGE_NAME = 'kumar0ndocker/juice-shop'
+        TAG = 'v4.1'        
+        TARGET_URL = "http://${IP_HOSTED}:3000" // Replace with actual target(deployed juice-shop
+        WEB_HOST = "ubuntu@${IP_HOSTED}"
+        EC2_KEY_ID    = 'ec2-ssh-key'
+        WEB_APP_PORT  = '3000'
+        
+        //DAST-INSTANCE-CONFIGURATION
+        ZAP_INSTANCE_HOST = "ubuntu@51.20.144.204"       //DAST -SCAN
         ZAP_REPORT_HTML = 'zap_report.html'
         ZAP_REPORT_XML  = 'zap_report.xml'
         ZAP_REPORT_JSON = 'zap_report.json'
-        TARGET_URL      = "http://${IP_HOSTED}:3000" // Replace with actual target(deployed juice-shop
-        IMAGE_NAME = 'kumar0ndocker/juice-shop'
-        TAG = 'v4.1'
-        IP_HOSTED = '56.228.26.130' //juice shop hosted ip
-        WEB_HOST = "ubuntu@${IP_HOSTED}"
-        IP = '51.21.248.70'                          //jenkins-server ip
-        EC2_HOST          = "ubuntu@${IP}"             // for jenkins ssh
-        WEB_APP_PORT      = '3000'
-        EC2_KEY_ID        = 'ec2-ssh-key'
-        ZAP_INSTANCE_HOST = "ubuntu@16.171.233.112"       //DAST -SCAN
-        IP_DD = '51.21.255.80'
+        
+        //DEFECTDOJO-CONFIGURATION
+        IP_DD = '51.21.246.197'      //DEFECT-DOJO IP
         DEFECTDOJO_URL = "http://${IP_DD}:8080"
-        ENGAGEMENT_ID = '1'
+        ENGAGEMENT_ID = '1'      
+        
+        
+       
+        
     }
 
     stages {
@@ -237,10 +249,10 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'DEFECTDOJO_API_TOKEN', variable: 'DD_API_KEY')]) {
                     sh '''
-                        if [ -f dependency-check-report/dependency-check-report.xml ]; then
+                        if [ -f dependency-check-report/dependency-check-report.json ]; then
                             curl -X POST "$DEFECTDOJO_URL/api/v2/import-scan/" \
                               -H "Authorization: Token $DD_API_KEY" \
-                              -F "file=@dependency-check-report/dependency-check-report.xml" \
+                              -F "file=@dependency-check-report/dependency-check-report.json" \
                               -F "scan_type=Dependency Check Scan" \
                               -F "engagement=$ENGAGEMENT_ID" \
                               -F "active=true" -F "verified=true" -F "close_old_findings=true"
