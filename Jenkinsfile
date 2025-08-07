@@ -3,15 +3,15 @@ pipeline {
 
     environment {
         //Jenkins_instance ip
-        IP = '13.48.48.24'                    //jenkins-server ip
+        IP = '13.49.245.215'                    //jenkins-server ip
         EC2_HOST = "ubuntu@${IP}"             // for jenkins ssh
 
         //Sonarqube-Configuration
         SONAR_SCANNER = tool name: 'sonar-scanner'
-        SONAR_URL =  'http://56.228.10.151:9000'   //ip of sonarqube
+        SONAR_URL =  'http://51.21.129.26:9000'   //ip of sonarqube
 
         //Application{Juice-shop}configuration
-        IP_HOSTED = '13.60.250.22' //juice shop hosted ip
+        IP_HOSTED = '13.60.232.184' //juice shop hosted ip
         IMAGE_NAME = 'kumar0ndocker/juice-shop'
         TAG = 'v4.1'        
         TARGET_URL = "http://${IP_HOSTED}:3000" // Replace with actual target(deployed juice-shop
@@ -20,13 +20,13 @@ pipeline {
         WEB_APP_PORT  = '3000'
         
         //DAST-INSTANCE-CONFIGURATION
-        ZAP_INSTANCE_HOST = "ubuntu@51.20.144.204"       //DAST -SCAN
+        ZAP_INSTANCE_HOST = "ubuntu@13.62.53.106"       //DAST -SCAN
         ZAP_REPORT_HTML = 'zap_report.html'
         ZAP_REPORT_XML  = 'zap_report.xml'
         ZAP_REPORT_JSON = 'zap_report.json'
         
         //DEFECTDOJO-CONFIGURATION
-        IP_DD = '51.21.246.197'      //DEFECT-DOJO IP
+        IP_DD = '51.21.252.49'      //DEFECT-DOJO IP
         DEFECTDOJO_URL = "http://${IP_DD}:8080"
         ENGAGEMENT_ID = '2'  
   
